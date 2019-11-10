@@ -1,0 +1,33 @@
+{
+  "result": {
+    "item": "ringu:basering"
+  },
+  "pattern": [
+    "REL",
+    "GDG",
+    "GGG"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "R": {
+      "type": "forge:ore_dict",
+      "ore" : "blockRedstone"
+    },
+    "E": {
+      "type": "forge:ore_dict",
+      "ore" : "blockEmerald"
+    },
+    "L": {
+      "type": "forge:ore_dict",
+      "ore" : "blockLapis"
+    },
+    "D": {
+      "type": "forge:ore_dict",
+      "ore" : "blockDiamond"
+    },
+    "G": {
+      "type": "forge:ore_dict",
+      "ore" : "blockGold"
+    }
+  }
+}

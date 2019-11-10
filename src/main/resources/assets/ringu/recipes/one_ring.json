@@ -1,0 +1,22 @@
+{
+  "result": {
+    "item": "ringu:onering"
+  },
+  "pattern": [
+    "NDN",
+    "DBD",
+    "NDN"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": {
+      "item": "ringu:basering"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    },
+    "D": {
+      "item": "minecraft:dragon_breath"
+    }
+  }
+}
