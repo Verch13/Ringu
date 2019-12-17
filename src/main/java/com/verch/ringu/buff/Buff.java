@@ -1,10 +1,12 @@
 package com.verch.ringu.buff;
 
+import com.verch.ringu.potion.BuffPotion;
 import com.verch.ringu.setup.RinguConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -32,6 +34,9 @@ public class Buff {
 
     private static final boolean enablePotion = RinguConfig.potion.enablePotion;
     private static final ArrayList<BuffPotion> buffPotionList = RinguConfig.potion.buffPotionList;
+
+    private static final boolean enableCure = RinguConfig.cure.enableCure;
+    private static final ArrayList<Potion> curePotionList = RinguConfig.cure.curePotionList;
 
     private static final boolean enableMagnet = RinguConfig.magnet.enableMagnet;
     private static final int magnetRange = RinguConfig.magnet.magnetRange;
@@ -103,6 +108,11 @@ public class Buff {
         if (enablePotion) {
             for (BuffPotion buffPotion : buffPotionList) {
                 player.addPotionEffect(new PotionEffect(buffPotion.getPotion(), buffPotion.getDuration(), buffPotion.getLevel(), true, false));
+            }
+        }
+        if (enableCure){
+            for (Potion curePotion : curePotionList){
+                player.removePotionEffect(curePotion);
             }
         }
     }

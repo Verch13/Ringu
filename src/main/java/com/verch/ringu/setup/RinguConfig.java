@@ -1,8 +1,10 @@
 package com.verch.ringu.setup;
 
 import com.verch.ringu.Ringu;
-import com.verch.ringu.buff.BuffPotion;
+import com.verch.ringu.potion.BuffPotion;
+import com.verch.ringu.potion.PotionUtil;
 import net.minecraft.init.MobEffects;
+import net.minecraft.potion.Potion;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -23,6 +25,7 @@ public class RinguConfig {
     public static SubCatagoryFood food = new SubCatagoryFood();
     public static SubCatagoryMagnet magnet = new SubCatagoryMagnet();
     public static SubCatagoryPotion potion = new SubCatagoryPotion();
+    public static SubCatagoryCure cure = new SubCatagoryCure();
 
     public static class SubCatagoryFlight {
 
@@ -76,7 +79,7 @@ public class RinguConfig {
         public int magnetRange = 16;
 
     }
-    public static class SubCatagoryPotion{
+    public static class SubCatagoryPotion {
 
         @Config.Ignore
         public ArrayList<BuffPotion> buffPotionList = new ArrayList<>();
@@ -84,7 +87,7 @@ public class RinguConfig {
         @Config.Ignore
         private static ArrayList<BuffPotion> buffPotionListExample = new ArrayList<>(Arrays.asList(
                 new BuffPotion(MobEffects.NIGHT_VISION, 0, 600)
-              , new BuffPotion(MobEffects.LUCK, 0, 600)));
+               ,new BuffPotion(MobEffects.LUCK, 0, 600)));
 
         @Config.Comment("Whether The One Ring gives a potion buff.")
         public boolean enablePotion = true;
@@ -92,13 +95,46 @@ public class RinguConfig {
         @Config.Comment("List of Potions to buff with of the form: potion_name,level,duration_in_ticks")
         public String[] potionList = BuffPotion.buffPotionListToPotionStringArray(buffPotionListExample);
 
-        private void init(){
+        private void init() {
             buffPotionList = BuffPotion.BuffPotionListFromPotionStringArray(potionList);
+        }
+    }
+
+    public static class SubCatagoryCure{
+
+        @Config.Ignore
+        public ArrayList<Potion> curePotionList = new ArrayList<>();
+
+        @Config.Ignore
+        private static ArrayList<Potion> curePotionListExample = new ArrayList<>(Arrays.asList(
+                MobEffects.SLOWNESS
+               ,MobEffects.MINING_FATIGUE
+               ,MobEffects.INSTANT_DAMAGE
+               ,MobEffects.NAUSEA
+               ,MobEffects.BLINDNESS
+               ,MobEffects.HUNGER
+               ,MobEffects.WEAKNESS
+               ,MobEffects.POISON
+               ,MobEffects.WITHER
+               ,MobEffects.GLOWING
+               ,MobEffects.LEVITATION
+              )
+        );
+
+        @Config.Comment("Whether The One Ring cures a potion debuff.")
+        public boolean enableCure = true;
+
+        @Config.Comment("List of Potions to cure")
+        public String[] potionList = PotionUtil.potionListToPotionStringArray(curePotionListExample);
+
+        private void init(){
+            curePotionList = PotionUtil.potionListFromPotionStringArray(potionList);
         }
     }
 
     public static void postInit(){
         potion.init();
+        cure.init();
     }
 
     @Mod.EventBusSubscriber(modid = Ringu.MODID)

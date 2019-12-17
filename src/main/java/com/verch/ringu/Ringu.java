@@ -15,9 +15,9 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = Ringu.MODID, name = Ringu.NAME, version = Ringu.VERSION, dependencies = "required-after:forge@[" + Ringu.MIN_FORGE_VER + ",)", useMetadata = true)
 public class Ringu {
     public static final String MODID = "ringu";
-    public static final String NAME = "Ringu";
-    public static final String VERSION = "1.0.0";
-    public static final String MIN_FORGE_VER = "14.23.5.2768";
+    static final String NAME = "Ringu";
+    static final String VERSION = "1.0.0";
+    static final String MIN_FORGE_VER = "14.23.5.2768";
 
     public static Logger logger;
 

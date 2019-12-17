@@ -25,7 +25,7 @@ public class ItemOneRing extends Item implements IBauble {
 
     public ItemOneRing() {
         setRegistryName(new ResourceLocation(Ringu.MODID, "onering"));
-        setUnlocalizedName(Ringu.MODID + ".onering");
+        setUnlocalizedName(this.getRegistryName().toString());
         setCreativeTab(Ringu.creativeTab);
         this.setMaxStackSize(1);
     }

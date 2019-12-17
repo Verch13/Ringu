@@ -1,6 +1,6 @@
 #PARSE_ESCAPES
 
-item.ringu.basering.name=The Base Ring
-item.ringu.onering.name=The One Ring
+item.ringu:basering.name=The Base Ring
+item.ringu:onering.name=The One Ring
 
 itemGroup.Ringu=Ringu

@@ -24,7 +24,6 @@ repositories {
 
 version = version_major + "." + version_minor + "." + version_patch
 group = "com.verch.ringu" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "ringu_" + minecraft_version
 
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileJava {
