@@ -25,7 +25,7 @@ public class ItemOneRing extends Item implements IBauble {
 
     public ItemOneRing() {
         setRegistryName(new ResourceLocation(Ringu.MODID, "onering"));
-        setUnlocalizedName(this.getRegistryName().toString());
+        setUnlocalizedName(Ringu.MODID + ".onering");
         setCreativeTab(Ringu.creativeTab);
         this.setMaxStackSize(1);
     }
@@ -58,8 +58,8 @@ public class ItemOneRing extends Item implements IBauble {
         return super.onItemRightClick(world, player, hand);
     }
 
-    public void onTickUpdate(EntityPlayer player, boolean isActive) {
-        RinguEvent.onTick(player, isActive);
+    public void onInventoryTick(EntityPlayer player, boolean isActive) {
+        RinguEvent.onInventoryTick(player, isActive);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ItemOneRing extends Item implements IBauble {
         if (!(entity instanceof EntityPlayer)) {
             return;
         }
-        onTickUpdate((EntityPlayer) entity, isEnabled(stack));
+        onInventoryTick((EntityPlayer) entity, isEnabled(stack));
     }
 
     @Optional.Method(modid = "baubles")
@@ -79,7 +79,7 @@ public class ItemOneRing extends Item implements IBauble {
     @Optional.Method(modid = "baubles")
     @Override
     public void onWornTick(ItemStack itemstack, EntityLivingBase player) {
-        onTickUpdate((EntityPlayer) player, isEnabled(itemstack));
+        onInventoryTick((EntityPlayer) player, isEnabled(itemstack));
     }
 
     @Optional.Method(modid = "baubles")

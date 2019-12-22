@@ -33,6 +33,25 @@ public class RinguEvent {
         return !player.world.isRemote && tick == 0;
     }
 
+    public static void onEquip(EntityPlayer player) {
+        Buff.equipBuff(player);
+    }
+
+    public static void onUnequip(EntityPlayer player) {
+        Buff.unequipBuff(player);
+    }
+
+    private static boolean hasOneRing(EntityPlayer player) {
+        return player.inventory.hasItemStack(oneRingStack);
+    }
+
+    public static void onInventoryTick(EntityPlayer player, boolean isActive) {
+        if (!doUpdate(player, tickBauble)) {
+            return;
+        }
+        Buff.onTickBuff(player, isActive);
+    }
+
     @SubscribeEvent
     public static void onTickServerEvent(TickEvent.ServerTickEvent event) {
         tick = newTick(tick);
@@ -48,25 +67,10 @@ public class RinguEvent {
             return;
         }
 
-        if (player.inventory.hasItemStack(oneRingStack)) {
+        if (hasOneRing(player)) {
             onEquip(player);
         } else {
             onUnequip(player);
         }
-    }
-
-    public static void onTick(EntityPlayer player, boolean isActive) {
-        if (!doUpdate(player, tickBauble)) {
-            return;
-        }
-        Buff.onTickBuff(player, isActive);
-    }
-
-    public static void onEquip(EntityPlayer player) {
-        Buff.equipBuff(player);
-    }
-
-    public static void onUnequip(EntityPlayer player) {
-        Buff.unequipBuff(player);
     }
 }

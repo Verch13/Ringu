@@ -1,6 +1,6 @@
 package com.verch.ringu.buff;
 
-import com.verch.ringu.potion.BuffPotion;
+import com.verch.ringu.effect.BuffEffect;
 import com.verch.ringu.setup.RinguConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -11,7 +11,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Buff {
@@ -32,11 +31,11 @@ public class Buff {
     private static final int foodToAdd = RinguConfig.food.foodToAdd;
     private static final float foodSaturationToAdd = RinguConfig.food.foodSaturationToAdd;
 
-    private static final boolean enablePotion = RinguConfig.potion.enablePotion;
-    private static final ArrayList<BuffPotion> buffPotionList = RinguConfig.potion.buffPotionList;
+    private static final boolean enableEffect = RinguConfig.effect.enableEffect;
+    private static final BuffEffect[] buffEffectArray = RinguConfig.effect.buffEffectArray;
 
     private static final boolean enableCure = RinguConfig.cure.enableCure;
-    private static final ArrayList<Potion> curePotionList = RinguConfig.cure.curePotionList;
+    private static final Potion[] cureEffectArray = RinguConfig.cure.cureEffectArray;
 
     private static final boolean enableMagnet = RinguConfig.magnet.enableMagnet;
     private static final int magnetRange = RinguConfig.magnet.magnetRange;
@@ -105,14 +104,14 @@ public class Buff {
         if (enableWaterBreathing) {
             player.setAir(airFull);
         }
-        if (enablePotion) {
-            for (BuffPotion buffPotion : buffPotionList) {
-                player.addPotionEffect(new PotionEffect(buffPotion.getPotion(), buffPotion.getDuration(), buffPotion.getLevel(), true, false));
+        if (enableEffect) {
+            for (BuffEffect buffEffect : buffEffectArray) {
+                player.addPotionEffect(new PotionEffect(buffEffect.getEffect(), buffEffect.getDuration(), buffEffect.getLevel(), true, false));
             }
         }
-        if (enableCure){
-            for (Potion curePotion : curePotionList){
-                player.removePotionEffect(curePotion);
+        if (enableCure) {
+            for (Potion cureEffect : cureEffectArray) {
+                player.removePotionEffect(cureEffect);
             }
         }
     }
@@ -145,8 +144,10 @@ public class Buff {
     public static void unequipBuff(EntityPlayer player) {
         if (enableFlight) {
             player.capabilities.isFlying = false;
-            player.capabilities.allowFlying = false;
             player.capabilities.setFlySpeed(defaultFlySpeed);
+            if (!player.isCreative()) {
+                player.capabilities.allowFlying = false;
+            }
         }
         if (enableWalkingBuff) {
             player.capabilities.setPlayerWalkSpeed(defaultWalkSpeed);

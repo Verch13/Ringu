@@ -12,9 +12,8 @@ public class ItemBaseRing extends Item {
 
     public ItemBaseRing() {
         setRegistryName(new ResourceLocation(Ringu.MODID, "basering"));
-        setUnlocalizedName(this.getRegistryName().toString());
+        setUnlocalizedName(Ringu.MODID + ".basering");
         setCreativeTab(Ringu.creativeTab);
-        this.setMaxStackSize(1);
     }
 
     @SideOnly(Side.CLIENT)
