@@ -2,12 +2,11 @@ package com.verch.ringu.event;
 
 import com.verch.ringu.RinguItems;
 import com.verch.ringu.buff.Buff;
-import com.verch.ringu.compat.BaubleTools;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 @Mod.EventBusSubscriber
 public class RinguEvent {
@@ -16,9 +15,6 @@ public class RinguEvent {
     private static final int startTick = -1;
 
     static int tick = startTick;
-    static int tickBauble = startTick;
-
-    private static final ItemStack oneRingStack = new ItemStack(RinguItems.itemOneRing);
 
     private static int newTick(int tick) {
         int newTick = tick + 1;
@@ -29,44 +25,47 @@ public class RinguEvent {
         return newTick;
     }
 
-    private static boolean doUpdate(EntityPlayer player, int tick) {
+    private static boolean doUpdate(PlayerEntity player, int tick) {
         return !player.world.isRemote && tick == 0;
     }
 
-    @SubscribeEvent
-    public static void onTickServerEvent(TickEvent.ServerTickEvent event) {
-        tick = newTick(tick);
-        tickBauble = newTick(tickBauble);
+    private static void onEquip(PlayerEntity player) {
+        Buff.equipBuff(player);
     }
 
-    @SubscribeEvent
-    public static void onTickPlayerEvent(TickEvent.PlayerTickEvent event) {
-        EntityPlayer player = event.player;
-
-        //No need to update if the player has the item as a bauble
-        if (!doUpdate(player, tick) || BaubleTools.hasOneRingBauble(player)) {
-            return;
-        }
-
-        if (player.inventory.hasItemStack(oneRingStack)) {
-            onEquip(player);
-        } else {
-            onUnequip(player);
-        }
+    private static void onUnequip(PlayerEntity player) {
+        Buff.unequipBuff(player);
     }
 
-    public static void onTick(EntityPlayer player, boolean isActive) {
-        if (!doUpdate(player, tickBauble)) {
+    private static boolean hasOneRing(PlayerEntity player) {
+        return player.inventory.hasItemStack(new ItemStack(RinguItems.itemOneRing));
+    }
+
+    public static void onInventoryTick(PlayerEntity player, boolean isActive) {
+        if (!doUpdate(player, tick)) {
             return;
         }
         Buff.onTickBuff(player, isActive);
     }
 
-    public static void onEquip(EntityPlayer player) {
-        Buff.equipBuff(player);
+    @SubscribeEvent
+    public static void onTickServerEvent(TickEvent.ServerTickEvent event) {
+        tick = newTick(tick);
     }
 
-    public static void onUnequip(EntityPlayer player) {
-        Buff.unequipBuff(player);
+    @SubscribeEvent
+    public static void onTickPlayerEvent(TickEvent.PlayerTickEvent event) {
+        PlayerEntity player = event.player;
+
+        //No need to update if the player has the item as a bauble
+        if (!doUpdate(player, tick)) {
+            return;
+        }
+
+        if (hasOneRing(player)) {
+            onEquip(player);
+        } else {
+            onUnequip(player);
+        }
     }
 }

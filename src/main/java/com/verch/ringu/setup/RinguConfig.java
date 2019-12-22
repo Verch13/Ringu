@@ -1,152 +1,246 @@
 package com.verch.ringu.setup;
 
-import com.verch.ringu.Ringu;
-import com.verch.ringu.potion.BuffPotion;
-import com.verch.ringu.potion.PotionUtil;
-import net.minecraft.init.MobEffects;
-import net.minecraft.potion.Potion;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.io.WritingMode;
+import com.google.common.collect.Lists;
+import com.verch.ringu.effect.BuffEffect;
+import com.verch.ringu.effect.EffectUtil;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.Effects;
+import net.minecraftforge.common.ForgeConfigSpec;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.nio.file.Path;
+import java.util.List;
 
-
-@Config(modid = Ringu.MODID)
-@Mod.EventBusSubscriber(modid = Ringu.MODID)
 public class RinguConfig {
 
-    public static SubCatagoryFlight flight = new SubCatagoryFlight();
-    public static SubCatagoryGround ground = new SubCatagoryGround();
-    public static SubCatagoryWater water = new SubCatagoryWater();
-    public static SubCatagoryFood food = new SubCatagoryFood();
-    public static SubCatagoryMagnet magnet = new SubCatagoryMagnet();
-    public static SubCatagoryPotion potion = new SubCatagoryPotion();
-    public static SubCatagoryCure cure = new SubCatagoryCure();
+    private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
+    private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
 
-    public static class SubCatagoryFlight {
+    public static ForgeConfigSpec COMMON_CONFIG;
+    public static ForgeConfigSpec CLIENT_CONFIG;
 
-        @Config.Comment("Whether The One Ring enables flight.")
-        public boolean enableFlight = true;
 
-        @Config.Comment("Flight Speed Multiplier.")
-        @Config.RangeDouble(min = 0.0d, max = 10.0d)
-        public float flySpeedMultiplier = 2.0f;
+    public static final String CATEGORY_FLIGHT = "flight";
+    public static ForgeConfigSpec.BooleanValue enableFlight;
+    public static ForgeConfigSpec.DoubleValue flySpeedMultiplier;
 
+    public static final String CATEGORY_GROUND = "ground";
+    public static ForgeConfigSpec.BooleanValue enableWalkingBuff;
+    public static ForgeConfigSpec.DoubleValue walkSpeedMultiplier;
+
+    public static final String CATEGORY_WATER = "water";
+    public static ForgeConfigSpec.BooleanValue enableWaterBreathing;
+
+    public static final String CATEGORY_FOOD = "food";
+    public static ForgeConfigSpec.BooleanValue enableFood;
+    public static ForgeConfigSpec.IntValue foodToAdd;
+    public static ForgeConfigSpec.DoubleValue foodSaturationToAdd;
+
+    public static final String CATEGORY_MAGNET = "magnet";
+    public static ForgeConfigSpec.BooleanValue enableMagnet;
+    public static ForgeConfigSpec.IntValue magnetRange;
+
+    public static final String CATEGORY_EFFECT = "effect";
+    public static ForgeConfigSpec.BooleanValue enableEffect;
+    public static BuffEffect[] buffEffectArray;
+
+    public static BuffEffect[] buffEffectArrayDefault = new BuffEffect[]{
+            new BuffEffect(Effects.NIGHT_VISION, 0, 600),
+            new BuffEffect(Effects.LUCK, 0, 600),
+            new BuffEffect(Effects.CONDUIT_POWER, 0, 600),
+            new BuffEffect(Effects.DOLPHINS_GRACE, 0, 600),
+            new BuffEffect(Effects.HERO_OF_THE_VILLAGE, 0, 600),
+    };
+    public static String[] buffEffectStringArrayDefault = BuffEffect.buffEffectArrayToEffectStringArray(buffEffectArrayDefault);
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> buffEffectStringArray;
+
+    public static final String CATEGORY_CURE = "cure";
+    public static ForgeConfigSpec.BooleanValue enableCure;
+    public static Effect[] cureEffectArray;
+
+    public static Effect[] cureEffectArrayDefault = new Effect[]{
+            Effects.SLOWNESS,
+            Effects.MINING_FATIGUE,
+            Effects.INSTANT_DAMAGE,
+            Effects.NAUSEA,
+            Effects.BLINDNESS,
+            Effects.HUNGER,
+            Effects.WEAKNESS,
+            Effects.POISON,
+            Effects.WITHER,
+            Effects.GLOWING,
+            Effects.LEVITATION,
+            Effects.UNLUCK,
+            Effects.BAD_OMEN
+    };
+    public static String[] cureEffectStringArrayDefault = EffectUtil.effectArrayToEffectStringArray(cureEffectArrayDefault);
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> cureEffectStringArray;
+
+    private static void flightConfigInit(ForgeConfigSpec.Builder commonBuilder, ForgeConfigSpec.Builder clientBuilder) {
+        commonBuilder.comment("Flight Settings").push(CATEGORY_FLIGHT);
+        clientBuilder.comment("Flight Settings").push(CATEGORY_FLIGHT);
+
+        enableFlight = commonBuilder
+                .comment("Whether The One Ring enables flight.")
+                .define("enableFlight", true);
+
+        flySpeedMultiplier = commonBuilder
+                .comment("Flight Speed Multiplier.")
+                .defineInRange("flySpeedMultiplier", 2.0d, 0.0d, 10.0d);
+
+        commonBuilder.pop();
+        clientBuilder.pop();
     }
 
-    public static class SubCatagoryGround {
+    private static void groundConfigInit(ForgeConfigSpec.Builder commonBuilder, ForgeConfigSpec.Builder clientBuilder) {
+        commonBuilder.comment("Ground Settings").push(CATEGORY_GROUND);
+        clientBuilder.comment("Ground Settings").push(CATEGORY_GROUND);
 
-        @Config.Comment("Whether The One Ring gives a walk speed buff.")
-        public boolean enableWalkingBuff = true;
+        enableWalkingBuff = commonBuilder
+                .comment("Whether The One Ring gives a walk speed buff")
+                .define("enableWalkingBuff", true);
 
-        @Config.Comment("Walk Speed Multiplier.")
-        @Config.RangeDouble(min = 0.0, max = 10.0)
-        public float walkSpeedMultiplier = 2.0f;
+        walkSpeedMultiplier = commonBuilder
+                .comment("Walk Speed Multiplier.")
+                .defineInRange("walkSpeedMultiplier", 2.0d, 0.0d, 10.0d);
 
+        commonBuilder.pop();
+        clientBuilder.pop();
     }
 
-    public static class SubCatagoryWater {
+    private static void waterConfigInit(ForgeConfigSpec.Builder commonBuilder, ForgeConfigSpec.Builder clientBuilder) {
+        commonBuilder.comment("Water Settings").push(CATEGORY_WATER);
+        clientBuilder.comment("Water Settings").push(CATEGORY_WATER);
 
-        @Config.Comment("Whether The One Ring gives water breathing.")
-        public boolean enableWaterBreathing = true;
+        enableWaterBreathing = commonBuilder
+                .comment("Whether The One Ring gives water breathing.")
+                .define("enableWaterBreathing", true);
 
+        commonBuilder.pop();
+        clientBuilder.pop();
     }
 
-    public static class SubCatagoryFood{
+    private static void foodConfigInit(ForgeConfigSpec.Builder commonBuilder, ForgeConfigSpec.Builder clientBuilder) {
+        commonBuilder.comment("Food Settings").push(CATEGORY_FOOD);
+        clientBuilder.comment("Food Settings").push(CATEGORY_FOOD);
 
-        @Config.Comment("Whether The One Ring is a source of food.")
-        public boolean enableFood = true;
+        enableFood = commonBuilder
+                .comment("Whether The One Ring is a source of food.")
+                .define("enableFood", true);
 
-        @Config.Comment("Food to add every second.")
-        @Config.RangeInt(min = 0, max = 10)
-        public int foodToAdd = 1;
+        foodToAdd = commonBuilder
+                .comment("Food to add every second.")
+                .defineInRange("foodToAdd", 1, 0, 10);
 
-        @Config.Comment("Saturation to add every second.")
-        @Config.RangeDouble(min = 0.0, max = 10.0)
-        public float foodSaturationToAdd = 1.0f;
+        foodSaturationToAdd = commonBuilder
+                .comment("Saturation to add every second.")
+                .defineInRange("foodSaturationToAdd", 1.0d, 0.0d, 10.0d);
 
+        commonBuilder.pop();
+        clientBuilder.pop();
     }
-    public static class SubCatagoryMagnet{
-        @Config.Comment("Whether The One Ring acts as an item magnet when activated (Right click when in hand to activate).")
-        public boolean enableMagnet = true;
 
-        @Config.Comment("The range in which the magnet will take effect.")
-        @Config.RangeInt(min = 0, max = 64)
-        public int magnetRange = 16;
+    private static void magnetConfigInit(ForgeConfigSpec.Builder commonBuilder, ForgeConfigSpec.Builder clientBuilder) {
+        commonBuilder.comment("Magnet Settings").push(CATEGORY_EFFECT);
+        clientBuilder.comment("Magnet Settings").push(CATEGORY_MAGNET);
 
+        enableMagnet = commonBuilder
+                .comment("Whether The One Ring acts as an item magnet when activated (Right click when in hand to activate).")
+                .define("enableMagnet", true);
+
+        magnetRange = commonBuilder
+                .comment("The range in which the magnet will take effect.")
+                .defineInRange("magnetRange", 16, 0, 64);
+
+        commonBuilder.pop();
+        clientBuilder.pop();
     }
-    public static class SubCatagoryPotion {
 
-        @Config.Ignore
-        public ArrayList<BuffPotion> buffPotionList = new ArrayList<>();
+    private static void effectConfigInit(ForgeConfigSpec.Builder commonBuilder, ForgeConfigSpec.Builder clientBuilder) {
+        commonBuilder.comment("Effect Settings").push(CATEGORY_EFFECT);
+        clientBuilder.comment("Effect Settings").push(CATEGORY_EFFECT);
 
-        @Config.Ignore
-        private static ArrayList<BuffPotion> buffPotionListExample = new ArrayList<>(Arrays.asList(
-                new BuffPotion(MobEffects.NIGHT_VISION, 0, 600)
-               ,new BuffPotion(MobEffects.LUCK, 0, 600)));
+        enableEffect = commonBuilder
+                .comment("Whether The One Ring gives an effect.")
+                .define("enableEffect", true);
 
-        @Config.Comment("Whether The One Ring gives a potion buff.")
-        public boolean enablePotion = true;
+        buffEffectStringArray = commonBuilder
+                .comment("List of Effects to buff with of the form: effect_name,level,duration_in_ticks")
+                .defineList("effectList", Lists.newArrayList(buffEffectStringArrayDefault), s -> s instanceof String);
 
-        @Config.Comment("List of Potions to buff with of the form: potion_name,level,duration_in_ticks")
-        public String[] potionList = BuffPotion.buffPotionListToPotionStringArray(buffPotionListExample);
+        commonBuilder.pop();
+        clientBuilder.pop();
+    }
 
-        private void init() {
-            buffPotionList = BuffPotion.BuffPotionListFromPotionStringArray(potionList);
+    private static void cureConfigInit(ForgeConfigSpec.Builder commonBuilder, ForgeConfigSpec.Builder clientBuilder) {
+        commonBuilder.comment("Cure Settings").push(CATEGORY_CURE);
+        clientBuilder.comment("Cure Settings").push(CATEGORY_CURE);
+
+        enableCure = commonBuilder
+                .comment("Whether The One Ring cures an effect debuff.")
+                .define("enableCure", true);
+
+        cureEffectStringArray = commonBuilder
+                .comment("List of Effects to cure")
+                .defineList("effectList", Lists.newArrayList(cureEffectStringArrayDefault), s -> s instanceof String);
+
+        commonBuilder.pop();
+        clientBuilder.pop();
+    }
+
+    private static void effectPostinit() {
+        List buffEffectList = buffEffectStringArray.get();
+        String[] buffEffectStringArray = new String[buffEffectList.size()];
+        for (int i = 0; i < buffEffectList.size(); i++) {
+            buffEffectStringArray[i] = (String) buffEffectList.get(i);
         }
+        buffEffectArray = BuffEffect.BuffEffectListFromEffectStringArray(buffEffectStringArray);
     }
 
-    public static class SubCatagoryCure{
-
-        @Config.Ignore
-        public ArrayList<Potion> curePotionList = new ArrayList<>();
-
-        @Config.Ignore
-        private static ArrayList<Potion> curePotionListExample = new ArrayList<>(Arrays.asList(
-                MobEffects.SLOWNESS
-               ,MobEffects.MINING_FATIGUE
-               ,MobEffects.INSTANT_DAMAGE
-               ,MobEffects.NAUSEA
-               ,MobEffects.BLINDNESS
-               ,MobEffects.HUNGER
-               ,MobEffects.WEAKNESS
-               ,MobEffects.POISON
-               ,MobEffects.WITHER
-               ,MobEffects.GLOWING
-               ,MobEffects.LEVITATION
-              )
-        );
-
-        @Config.Comment("Whether The One Ring cures a potion debuff.")
-        public boolean enableCure = true;
-
-        @Config.Comment("List of Potions to cure")
-        public String[] potionList = PotionUtil.potionListToPotionStringArray(curePotionListExample);
-
-        private void init(){
-            curePotionList = PotionUtil.potionListFromPotionStringArray(potionList);
+    private static void curePostinit() {
+        List cureEffectList = cureEffectStringArray.get();
+        String[] cureEffertStringArray = new String[cureEffectList.size()];
+        for (int i = 0; i < cureEffectList.size(); i++) {
+            cureEffertStringArray[i] = (String) cureEffectList.get(i);
         }
+        cureEffectArray = EffectUtil.effectArrayFromEffectStringArray(cureEffertStringArray);
     }
 
-    public static void postInit(){
-        potion.init();
-        cure.init();
+    public static void postInit() {
+        effectPostinit();
+        curePostinit();
     }
 
-    @Mod.EventBusSubscriber(modid = Ringu.MODID)
-    private static class EventHandler {
+    static {
+        flightConfigInit(COMMON_BUILDER, CLIENT_BUILDER);
+        groundConfigInit(COMMON_BUILDER, CLIENT_BUILDER);
+        waterConfigInit(COMMON_BUILDER, CLIENT_BUILDER);
+        foodConfigInit(COMMON_BUILDER, CLIENT_BUILDER);
+        magnetConfigInit(COMMON_BUILDER, CLIENT_BUILDER);
+        effectConfigInit(COMMON_BUILDER, CLIENT_BUILDER);
+        cureConfigInit(COMMON_BUILDER, CLIENT_BUILDER);
 
-        @SubscribeEvent
-        public static void onConfigChanged(final ConfigChangedEvent.OnConfigChangedEvent event) {
-            if (event.getModID().equals(Ringu.MODID)) {
-                ConfigManager.sync(Ringu.MODID, Config.Type.INSTANCE);
-            }
-        }
+        COMMON_CONFIG = COMMON_BUILDER.build();
+        CLIENT_CONFIG = CLIENT_BUILDER.build();
     }
 
+
+    public static void loadConfig(ForgeConfigSpec spec, Path path) {
+
+        final CommentedFileConfig configData = CommentedFileConfig.builder(path)
+                .sync()
+                .autosave()
+                .writingMode(WritingMode.REPLACE)
+                .build();
+
+        configData.load();
+        spec.setConfig(configData);
+
+        postInit();
+    }
 }
+
+
+
 

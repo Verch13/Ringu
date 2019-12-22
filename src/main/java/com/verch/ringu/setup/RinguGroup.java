@@ -1,19 +1,17 @@
 package com.verch.ringu.setup;
 
 import com.verch.ringu.RinguItems;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 
-public class RinguCreativeTab extends CreativeTabs {
+public class RinguGroup extends ItemGroup {
 
-    public RinguCreativeTab(String label) {
+    public RinguGroup(String label) {
         super(label);
     }
 
     @Override
-    public ItemStack getTabIconItem() {
+    public ItemStack createIcon() {
         return new ItemStack(RinguItems.itemOneRing);
     }
-
-
 }

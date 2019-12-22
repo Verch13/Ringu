@@ -1,17 +1,16 @@
 package com.verch.ringu.buff;
 
-import com.verch.ringu.potion.BuffPotion;
+import com.verch.ringu.effect.BuffEffect;
 import com.verch.ringu.setup.RinguConfig;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.entity.item.ExperienceOrbEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Buff {
@@ -20,47 +19,48 @@ public class Buff {
     private static final float defaultFlySpeed = 0.05f;
     private static final int airFull = 300;
 
-    private static final boolean enableFlight = RinguConfig.flight.enableFlight;
-    private static final float buffFlySpeed = RinguConfig.flight.flySpeedMultiplier * defaultFlySpeed;
+    private static final boolean enableFlight = RinguConfig.enableFlight.get();
+    private static final float buffFlySpeed = RinguConfig.flySpeedMultiplier.get().floatValue() * defaultFlySpeed;
 
-    private static final boolean enableWalkingBuff = RinguConfig.ground.enableWalkingBuff;
-    private static final float buffWalkSpeed = RinguConfig.ground.walkSpeedMultiplier * defaultWalkSpeed;
+    private static final boolean enableWalkingBuff = RinguConfig.enableWalkingBuff.get();
+    private static final float buffWalkSpeed = RinguConfig.walkSpeedMultiplier.get().floatValue() * defaultWalkSpeed;
 
-    private static final boolean enableWaterBreathing = RinguConfig.water.enableWaterBreathing;
+    private static final boolean enableWaterBreathing = RinguConfig.enableWaterBreathing.get();
 
-    private static final boolean enableFood = RinguConfig.food.enableFood;
-    private static final int foodToAdd = RinguConfig.food.foodToAdd;
-    private static final float foodSaturationToAdd = RinguConfig.food.foodSaturationToAdd;
+    private static final boolean enableFood = RinguConfig.enableFood.get();
+    private static final int foodToAdd = RinguConfig.foodToAdd.get();
+    private static final float foodSaturationToAdd = RinguConfig.foodSaturationToAdd.get().floatValue();
 
-    private static final boolean enablePotion = RinguConfig.potion.enablePotion;
-    private static final ArrayList<BuffPotion> buffPotionList = RinguConfig.potion.buffPotionList;
+    private static final boolean enableEffect = RinguConfig.enableEffect.get();
+    private static final BuffEffect[] buffEffectArray = RinguConfig.buffEffectArray;
 
-    private static final boolean enableCure = RinguConfig.cure.enableCure;
-    private static final ArrayList<Potion> curePotionList = RinguConfig.cure.curePotionList;
+    private static final boolean enableCure = RinguConfig.enableCure.get();
+    private static final Effect[] cureEffectArray = RinguConfig.cureEffectArray;
 
-    private static final boolean enableMagnet = RinguConfig.magnet.enableMagnet;
-    private static final int magnetRange = RinguConfig.magnet.magnetRange;
+    private static final boolean enableMagnet = RinguConfig.enableMagnet.get();
+    private static final int magnetRange = RinguConfig.magnetRange.get();
 
     private static boolean isDelayed(Entity entity) {
-        if (entity instanceof EntityItem) {
-            return ((EntityItem) entity).cannotPickup();
-        } else if (entity instanceof EntityXPOrb) return ((EntityXPOrb) entity).delayBeforeCanPickup > 0;
+        if (entity instanceof ItemEntity) {
+            return ((ItemEntity) entity).cannotPickup();
+        } else if (entity instanceof ExperienceOrbEntity)
+            return ((ExperienceOrbEntity) entity).delayBeforeCanPickup > 0;
         else {
             return true;
         }
     }
 
-    private static void moveEntityToPlayer(EntityPlayer player, Entity entity) {
-        entity.motionX = entity.motionY = entity.motionZ = 0;
+    private static void moveEntityToPlayer(PlayerEntity player, Entity entity) {
+        entity.setMotion(0, 0, 0);
         entity.setPosition(player.posX - 0.2 + (player.world.rand.nextDouble() * 0.4), player.posY - 0.6, player.posZ - 0.2 + (player.world.rand.nextDouble() * 0.4));
     }
 
-    private static boolean canMoveEntity(EntityPlayer player, Entity entity) {
-        if (entity.getEntityData().getBoolean("PreventRemoteMovement") || entity.isDead) {
+    private static boolean canMoveEntity(PlayerEntity player, Entity entity) {
+        if (entity.getPersistentData().getBoolean("PreventRemoteMovement") || !entity.isAlive()) {
             return false;
         }
 
-        EntityPlayer closest = player.world.getClosestPlayerToEntity(entity, 4);
+        PlayerEntity closest = player.world.getClosestPlayer(entity, 4);
         if (closest != null && closest != player) {
             return false;
         }
@@ -72,14 +72,14 @@ public class Buff {
     }
 
 
-    private static void updateMagnet(EntityPlayer player) {
+    private static void updateMagnet(PlayerEntity player) {
         if (!enableMagnet || player.isSneaking()) {
             return;
         }
 
         World world = player.world;
 
-        List<EntityItem> items = world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(player.posX, player.posY, player.posZ, player.posX, player.posY, player.posZ).grow(magnetRange, magnetRange, magnetRange));
+        List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(player.posX, player.posY, player.posZ, player.posX, player.posY, player.posZ).grow(magnetRange, magnetRange, magnetRange));
 
         for (Entity entity : items) {
             if (canMoveEntity(player, entity)) {
@@ -87,69 +87,71 @@ public class Buff {
             }
         }
 
-        List<EntityXPOrb> xp = world.getEntitiesWithinAABB(EntityXPOrb.class, new AxisAlignedBB(player.posX, player.posY, player.posZ, player.posX, player.posY, player.posZ).grow(magnetRange, magnetRange, magnetRange));
+        List<ExperienceOrbEntity> xp = world.getEntitiesWithinAABB(ExperienceOrbEntity.class, new AxisAlignedBB(player.posX, player.posY, player.posZ, player.posX, player.posY, player.posZ).grow(magnetRange, magnetRange, magnetRange));
 
-        for (EntityXPOrb orb : xp) {
+        for (ExperienceOrbEntity orb : xp) {
             if (canMoveEntity(player, (Entity) orb)) {
                 player.onItemPickup(orb, 1);
-                player.addExperience(orb.xpValue);
-                orb.setDead();
+                player.giveExperiencePoints(orb.xpValue);
+                orb.remove();
             }
         }
     }
 
-    private static void passiveBuff(EntityPlayer player) {
+    private static void passiveBuff(PlayerEntity player) {
         if (enableFood) {
             player.getFoodStats().addStats(foodToAdd, foodSaturationToAdd);
         }
         if (enableWaterBreathing) {
             player.setAir(airFull);
         }
-        if (enablePotion) {
-            for (BuffPotion buffPotion : buffPotionList) {
-                player.addPotionEffect(new PotionEffect(buffPotion.getPotion(), buffPotion.getDuration(), buffPotion.getLevel(), true, false));
+        if (enableEffect) {
+            for (BuffEffect buffEffect : buffEffectArray) {
+                player.addPotionEffect(new EffectInstance(buffEffect.getEffect(), buffEffect.getDuration(), buffEffect.getLevel(), true, false));
             }
         }
-        if (enableCure){
-            for (Potion curePotion : curePotionList){
-                player.removePotionEffect(curePotion);
+        if (enableCure) {
+            for (Effect cureEffect : cureEffectArray) {
+                player.removePotionEffect(cureEffect);
             }
         }
     }
 
-    private static void activeBuff(EntityPlayer player) {
+    private static void activeBuff(PlayerEntity player) {
         if (enableMagnet) {
             updateMagnet(player);
         }
     }
 
-    public static void onTickBuff(EntityPlayer player, boolean isActive) {
+    public static void onTickBuff(PlayerEntity player, boolean isActive) {
         passiveBuff(player);
         if (isActive) {
             activeBuff(player);
         }
     }
 
-    public static void equipBuff(EntityPlayer player) {
+    public static void equipBuff(PlayerEntity player) {
         if (enableFlight) {
-            player.capabilities.allowFlying = true;
-            player.capabilities.setFlySpeed(buffFlySpeed);
+            player.abilities.allowFlying = true;
+            player.abilities.setFlySpeed(buffFlySpeed);
         }
         if (enableWalkingBuff) {
-            player.capabilities.setPlayerWalkSpeed(buffWalkSpeed);
+            player.abilities.setWalkSpeed(buffWalkSpeed);
         }
 
         player.sendPlayerAbilities();
     }
 
-    public static void unequipBuff(EntityPlayer player) {
+    public static void unequipBuff(PlayerEntity player) {
         if (enableFlight) {
-            player.capabilities.isFlying = false;
-            player.capabilities.allowFlying = false;
-            player.capabilities.setFlySpeed(defaultFlySpeed);
+            player.abilities.isFlying = false;
+            player.abilities.setFlySpeed(defaultFlySpeed);
+            if (!player.isCreative()) {
+                player.abilities.allowFlying = false;
+            }
         }
         if (enableWalkingBuff) {
-            player.capabilities.setPlayerWalkSpeed(defaultWalkSpeed);
+            player.abilities.setWalkSpeed(defaultWalkSpeed);
         }
 
         player.sendPlayerAbilities();

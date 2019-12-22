@@ -11,23 +11,23 @@
   "key": {
     "R": {
       "type": "forge:ore_dict",
-      "ore" : "blockRedstone"
+      "ore": "blockRedstone"
     },
     "E": {
       "type": "forge:ore_dict",
-      "ore" : "blockEmerald"
+      "ore": "blockEmerald"
     },
     "L": {
       "type": "forge:ore_dict",
-      "ore" : "blockLapis"
+      "ore": "blockLapis"
     },
     "D": {
       "type": "forge:ore_dict",
-      "ore" : "blockDiamond"
+      "ore": "blockDiamond"
     },
     "G": {
       "type": "forge:ore_dict",
-      "ore" : "blockGold"
+      "ore": "blockGold"
     }
   }
 }

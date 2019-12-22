@@ -1,16 +1,18 @@
 [
-{
-  "modid": "ringu",
-  "name": "Ringu",
-  "description": "A mod which adds rings to buff the player.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "",
-  "updateUrl": "",
-  "authorList": ["Verch"],
-  "credits": "",
-  "logoFile": "",
-  "screenshots": [],
-  "dependencies": []
-}
+  {
+    "modid": "ringu",
+    "name": "Ringu",
+    "description": "A mod which adds rings to buff the player.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": [
+      "Verch"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
 ]
