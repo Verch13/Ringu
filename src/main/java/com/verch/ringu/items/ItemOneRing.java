@@ -24,7 +24,7 @@ public class ItemOneRing extends Item {
     private static final String isActive = "ringu:onering:IsActive";
 
     public ItemOneRing() {
-        super(new Item.Properties().group(Ringu.ringuGroup));
+        super(new Item.Properties().maxStackSize(1).group(Ringu.ringuGroup));
         setRegistryName(new ResourceLocation(Ringu.MODID, "onering"));
     }
 
