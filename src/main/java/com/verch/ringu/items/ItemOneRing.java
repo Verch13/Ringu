@@ -76,7 +76,7 @@ public class ItemOneRing extends Item {
             tooltip.add(TextFormatting.BLUE + I18n.format("item.ringu.activate"));
         }
         else{
-            tooltip.add(TextFormatting.BLUE + I18n.format("item.ringu.depleated"));
+            tooltip.add(TextFormatting.BLUE + I18n.format("item.ringu.depleted"));
             tooltip.add(TextFormatting.BLUE + I18n.format("item.ringu.deactivate"));
 
         }
