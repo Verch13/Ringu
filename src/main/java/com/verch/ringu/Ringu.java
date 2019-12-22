@@ -3,7 +3,6 @@ package com.verch.ringu;
 import com.verch.ringu.proxy.CommonProxy;
 import com.verch.ringu.setup.RinguConfig;
 import com.verch.ringu.setup.RinguCreativeTab;
-import com.verch.ringu.setup.RinguSetup;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -16,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 public class Ringu {
     public static final String MODID = "ringu";
     static final String NAME = "Ringu";
-    static final String VERSION = "1.12.2-1.2.0";
+    static final String VERSION = "1.12.2-1.3.0";
     static final String MIN_FORGE_VER = "14.23.5.2768";
 
     public static Logger logger;
@@ -32,7 +31,6 @@ public class Ringu {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         logger = event.getModLog();
-        RinguSetup.setupMod();
         proxy.preInit(event);
     }
 

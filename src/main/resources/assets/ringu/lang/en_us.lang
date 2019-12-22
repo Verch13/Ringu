@@ -1,6 +1,12 @@
 #PARSE_ESCAPES
 
-item.ringu.basering.name=The Base Ring
+item.ringu.basering.name=The Base Ringo
 item.ringu.onering.name=The One Ring
 
 itemGroup.Ringu=Ringu
+
+item.ringu.charged=Charged
+item.ringu.activate=Sneak right click to buff player
+
+item.ringu.depleated=Depleated
+item.ringu.deactivate=Sneak right click to remove buff from player

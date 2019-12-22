@@ -1,27 +1,42 @@
 package com.verch.ringu.util;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class RinguNBTUtil {
 
-    private static NBTTagCompound getCompound(ItemStack stack) {
-        if (stack.getTagCompound() == null) stack.setTagCompound(new NBTTagCompound());
-        return stack.getTagCompound();
+
+    private static NBTTagCompound getOrCreateCompound(ItemStack stack){
+        NBTTagCompound compound = stack.getTagCompound();
+        if(compound == null){
+            compound = new NBTTagCompound();
+            stack.setTagCompound(compound);
+        }
+        return compound;
     }
 
-    public static boolean exists(ItemStack stack, String tag) {
-        NBTTagCompound compound = stack.getTagCompound();
-        if (compound == null) return false;
-        else return stack.getTagCompound().hasKey(tag);
+    private static boolean getBoolean(NBTTagCompound compound, String tag, boolean defaultExpected) {
+        return compound.hasKey(tag) ? compound.getBoolean(tag) : defaultExpected;
+    }
+
+    private static void toggleBoolean(NBTTagCompound compound, String tag, boolean defaultExpected) {
+        compound.setBoolean(tag, !getBoolean(compound, tag, defaultExpected));
+    }
+
+    public static void toggleBoolean(EntityPlayer player, String tag, boolean defaultExpected) {
+        toggleBoolean(player.getEntityData(), tag, defaultExpected);
+    }
+
+    public static void toggleBoolean(ItemStack stack, String tag, boolean defaultExpected) {
+        toggleBoolean(getOrCreateCompound(stack), tag, defaultExpected);
+    }
+
+    public static boolean getBoolean(EntityPlayer player, String tag, boolean defaultExpected) {
+        return getBoolean(player.getEntityData(), tag, defaultExpected);
     }
 
     public static boolean getBoolean(ItemStack stack, String tag, boolean defaultExpected) {
-        return exists(stack, tag) ? stack.getTagCompound().getBoolean(tag) : defaultExpected;
-    }
-
-    public static ItemStack setBoolean(ItemStack stack, String tag, boolean b) {
-        getCompound(stack).setBoolean(tag, b);
-        return stack;
+        return getBoolean(getOrCreateCompound(stack), tag, defaultExpected);
     }
 }
