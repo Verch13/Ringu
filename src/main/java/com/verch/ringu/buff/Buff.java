@@ -117,20 +117,17 @@ public class Buff {
         }
     }
 
-    private static void activeBuff(PlayerEntity player) {
+    public static void onTickActive(PlayerEntity player) {
         if (enableMagnet) {
             updateMagnet(player);
         }
     }
 
-    public static void onTickBuff(PlayerEntity player, boolean isActive) {
+    public static void onTickPassive(PlayerEntity player) {
         passiveBuff(player);
-        if (isActive) {
-            activeBuff(player);
-        }
     }
 
-    public static void equipBuff(PlayerEntity player) {
+    public static void onActivation(PlayerEntity player) {
         if (enableFlight) {
             player.abilities.allowFlying = true;
             player.abilities.setFlySpeed(buffFlySpeed);
@@ -142,11 +139,11 @@ public class Buff {
         player.sendPlayerAbilities();
     }
 
-    public static void unequipBuff(PlayerEntity player) {
+    public static void onDeactivation(PlayerEntity player) {
         if (enableFlight) {
-            player.abilities.isFlying = false;
             player.abilities.setFlySpeed(defaultFlySpeed);
             if (!player.isCreative()) {
+                player.abilities.isFlying = false;
                 player.abilities.allowFlying = false;
             }
         }

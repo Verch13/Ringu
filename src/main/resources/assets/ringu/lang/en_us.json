@@ -1,5 +1,12 @@
 {
   "item.ringu.basering": "The Base Ring",
   "item.ringu.onering": "The One Ring",
+
+  "item.ringu.charged": "Charged",
+  "item.ringu.activate": "Sneak right click to buff player",
+
+  "item.ringu.depleted": "Depleted",
+  "item.ringu.deactivate": "Sneak right click to remove buff from player",
+
   "itemGroup.Ringu": "Ringu"
 }

@@ -1,9 +1,8 @@
 package com.verch.ringu.event;
 
-import com.verch.ringu.RinguItems;
 import com.verch.ringu.buff.Buff;
+import com.verch.ringu.items.ItemOneRing;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -29,23 +28,12 @@ public class RinguEvent {
         return !player.world.isRemote && tick == 0;
     }
 
-    private static void onEquip(PlayerEntity player) {
-        Buff.equipBuff(player);
+    public static void onActivation(PlayerEntity player){
+        Buff.onActivation(player);
     }
 
-    private static void onUnequip(PlayerEntity player) {
-        Buff.unequipBuff(player);
-    }
-
-    private static boolean hasOneRing(PlayerEntity player) {
-        return player.inventory.hasItemStack(new ItemStack(RinguItems.itemOneRing));
-    }
-
-    public static void onInventoryTick(PlayerEntity player, boolean isActive) {
-        if (!doUpdate(player, tick)) {
-            return;
-        }
-        Buff.onTickBuff(player, isActive);
+    public static void onDeactivation(PlayerEntity player){
+        Buff.onDeactivation(player);
     }
 
     @SubscribeEvent
@@ -57,15 +45,12 @@ public class RinguEvent {
     public static void onTickPlayerEvent(TickEvent.PlayerTickEvent event) {
         PlayerEntity player = event.player;
 
-        //No need to update if the player has the item as a bauble
-        if (!doUpdate(player, tick)) {
-            return;
-        }
+        if (!doUpdate(player, tick)){return;}
 
-        if (hasOneRing(player)) {
-            onEquip(player);
-        } else {
-            onUnequip(player);
+        if(ItemOneRing.oneRingPlayerIsActive(player)){
+            Buff.onTickPassive(player);
+            Buff.onTickActive(player);
         }
     }
 }
+
