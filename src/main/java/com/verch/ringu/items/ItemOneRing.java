@@ -27,6 +27,7 @@ public class ItemOneRing extends Item {
         setRegistryName(new ResourceLocation(Ringu.MODID, "onering"));
         setUnlocalizedName(Ringu.MODID + ".onering");
         setCreativeTab(Ringu.creativeTab);
+        this.setMaxStackSize(1);
     }
 
     private static boolean oneRingItemIsActive(ItemStack stack){return RinguNBTUtil.getBoolean(stack, isActive, true);}
