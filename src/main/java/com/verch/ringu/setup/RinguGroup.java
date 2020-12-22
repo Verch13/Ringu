@@ -6,12 +6,12 @@ import net.minecraft.item.ItemStack;
 
 public class RinguGroup extends ItemGroup {
 
-    public RinguGroup(String label) {
-        super(label);
-    }
+  public RinguGroup(String label) {
+    super(label);
+  }
 
-    @Override
-    public ItemStack createIcon() {
-        return new ItemStack(RinguItems.itemOneRing);
-    }
+  @Override
+  public ItemStack createIcon() {
+    return new ItemStack(RinguItems.itemOneRing);
+  }
 }
