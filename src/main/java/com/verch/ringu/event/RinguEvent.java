@@ -1,7 +1,6 @@
 package com.verch.ringu.event;
 
 import com.verch.ringu.buff.Buff;
-import com.verch.ringu.items.ItemOneRing;
 import com.verch.ringu.util.RinguNBTUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -95,7 +94,7 @@ public class RinguEvent {
       return;
     }
 
-    if (ItemOneRing.oneRingPlayerIsActive(player)) {
+    if (isActive(player)) {
       Buff.onTickPassive(player);
       Buff.onTickActive(player);
     }

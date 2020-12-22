@@ -2,7 +2,6 @@ package com.verch.ringu.items;
 
 import com.verch.ringu.Ringu;
 import com.verch.ringu.event.RinguEvent;
-import com.verch.ringu.util.RinguNBTUtil;
 import java.util.List;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -19,36 +18,14 @@ import net.minecraft.world.World;
 
 public class ItemOneRing extends Item {
 
-  private static final String isActive = "ringu:onering:IsActive";
-
   public ItemOneRing() {
     super(new Item.Properties().maxStackSize(1).group(Ringu.ringuGroup));
     setRegistryName(new ResourceLocation(Ringu.MODID, "onering"));
   }
 
-  private static boolean oneRingItemIsActive(ItemStack stack) {
-    return RinguNBTUtil.getBoolean(stack, isActive, true);
-  }
-
-  public static boolean oneRingPlayerIsActive(PlayerEntity player) {
-    return RinguNBTUtil.getBoolean(player, isActive, false);
-  }
-
   @Override
   public boolean hasEffect(ItemStack stack) {
-    return oneRingItemIsActive(stack);
-  }
-
-  public static void toggleEnabled(PlayerEntity player, ItemStack stack) {
-    if (oneRingItemIsActive(stack) == oneRingPlayerIsActive(player)) {
-      return;
-    } else if (oneRingPlayerIsActive(player)) {
-      RinguEvent.onDeactivation(player);
-    } else {
-      RinguEvent.onActivation(player);
-    }
-    RinguNBTUtil.toggleBoolean(player, isActive, false);
-    RinguNBTUtil.toggleBoolean(stack, isActive, true);
+    return RinguEvent.isActive(stack);
   }
 
   @Override
@@ -56,7 +33,7 @@ public class ItemOneRing extends Item {
     ItemStack stack = player.getHeldItem(hand);
 
     if (player.isSneaking()) {
-      toggleEnabled(player, stack);
+      RinguEvent.toggleEnabled(player, stack);
     }
     return super.onItemRightClick(world, player, hand);
   }
@@ -66,7 +43,7 @@ public class ItemOneRing extends Item {
       ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
     super.addInformation(stack, worldIn, tooltip, flagIn);
-    if (oneRingItemIsActive(stack)) {
+    if (RinguEvent.isActive(stack)) {
       tooltip.add(new StringTextComponent(TextFormatting.BLUE + I18n.format("item.ringu.charged")));
       tooltip.add(
           new StringTextComponent(TextFormatting.BLUE + I18n.format("item.ringu.activate")));
