@@ -1,4 +1,3 @@
 package com.verch.ringu.proxy;
 
-public class ServerProxy extends CommonProxy {
-}
+public class ServerProxy extends CommonProxy {}

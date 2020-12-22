@@ -1,6 +1,5 @@
 package com.verch.ringu.proxy;
 
-
 import com.verch.ringu.RinguItems;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -10,13 +9,13 @@ import net.minecraftforge.fml.relauncher.Side;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
-    @Override
-    public void preInit(FMLPreInitializationEvent e) {
-        super.preInit(e);
-    }
+  @Override
+  public void preInit(FMLPreInitializationEvent e) {
+    super.preInit(e);
+  }
 
-    @SubscribeEvent
-    public static void registerModels(ModelRegistryEvent event) {
-        RinguItems.initModels();
-    }
+  @SubscribeEvent
+  public static void registerModels(ModelRegistryEvent event) {
+    RinguItems.initModels();
+  }
 }

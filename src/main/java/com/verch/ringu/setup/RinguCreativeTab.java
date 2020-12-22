@@ -6,14 +6,12 @@ import net.minecraft.item.ItemStack;
 
 public class RinguCreativeTab extends CreativeTabs {
 
-    public RinguCreativeTab(String label) {
-        super(label);
-    }
+  public RinguCreativeTab(String label) {
+    super(label);
+  }
 
-    @Override
-    public ItemStack getTabIconItem() {
-        return new ItemStack(RinguItems.itemOneRing);
-    }
-
-
+  @Override
+  public ItemStack getTabIconItem() {
+    return new ItemStack(RinguItems.itemOneRing);
+  }
 }

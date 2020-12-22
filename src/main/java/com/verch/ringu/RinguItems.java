@@ -7,18 +7,18 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class RinguItems {
 
-    public static ItemBaseRing itemBaseRing;
-    public static ItemOneRing itemOneRing;
+  public static ItemBaseRing itemBaseRing;
+  public static ItemOneRing itemOneRing;
 
-    @SideOnly(Side.CLIENT)
-    public static void init() {
-        itemBaseRing = new ItemBaseRing();
-        itemOneRing = new ItemOneRing();
-    }
+  @SideOnly(Side.CLIENT)
+  public static void init() {
+    itemBaseRing = new ItemBaseRing();
+    itemOneRing = new ItemOneRing();
+  }
 
-    @SideOnly(Side.CLIENT)
-    public static void initModels() {
-        itemBaseRing.initModel();
-        itemOneRing.initModel();
-    }
+  @SideOnly(Side.CLIENT)
+  public static void initModels() {
+    itemBaseRing.initModel();
+    itemOneRing.initModel();
+  }
 }
