@@ -6,8 +6,8 @@ import net.minecraft.util.ResourceLocation;
 
 public class ItemBaseRing extends Item {
 
-    public ItemBaseRing() {
-        super(new Item.Properties().group(Ringu.ringuGroup));
-        setRegistryName(new ResourceLocation(Ringu.MODID, "basering"));
-    }
+  public ItemBaseRing() {
+    super(new Item.Properties().group(Ringu.ringuGroup));
+    setRegistryName(new ResourceLocation(Ringu.MODID, "basering"));
+  }
 }

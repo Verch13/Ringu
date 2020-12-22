@@ -5,18 +5,17 @@ import net.minecraftforge.fml.ModList;
 import org.apache.logging.log4j.Level;
 
 public class RinguSetup {
-    public static boolean baubles;
+  public static boolean baubles;
 
-    private static void setupModCompat() {
+  private static void setupModCompat() {
 
-        baubles = ModList.get().isLoaded("Baubles") || ModList.get().isLoaded("baubles");
-        if (baubles) {
-            Ringu.logger.log(Level.INFO, "Ringu detected Baubles, support added");
-        }
+    baubles = ModList.get().isLoaded("Baubles") || ModList.get().isLoaded("baubles");
+    if (baubles) {
+      Ringu.logger.log(Level.INFO, "Ringu detected Baubles, support added");
     }
+  }
 
-    public static void setupMod() {
-        setupModCompat();
-    }
+  public static void setupMod() {
+    setupModCompat();
+  }
 }
-

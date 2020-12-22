@@ -10,17 +10,12 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Registration {
 
-    @SubscribeEvent
-    public static void registerBlocks(RegistryEvent.Register<Block> event) {
-    }
+  @SubscribeEvent
+  public static void registerBlocks(RegistryEvent.Register<Block> event) {}
 
-    @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<Item> event) {
-        RinguItems.init();
-        event.getRegistry().registerAll
-                (
-                        RinguItems.itemBaseRing,
-                        RinguItems.itemOneRing
-                );
-    }
+  @SubscribeEvent
+  public static void registerItems(RegistryEvent.Register<Item> event) {
+    RinguItems.init();
+    event.getRegistry().registerAll(RinguItems.itemBaseRing, RinguItems.itemOneRing);
+  }
 }
