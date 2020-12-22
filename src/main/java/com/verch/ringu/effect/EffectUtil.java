@@ -5,41 +5,40 @@ import net.minecraft.potion.Potion;
 
 public class EffectUtil {
 
-    static Potion effectFromName(String effectName) {
-        Potion effect = null;
-        if (effectName == null || effectName.equals("")) {
-            return effect;
-        }
-        try {
-            effect = Potion.getPotionFromResourceLocation(effectName.trim());
+  static Potion effectFromName(String effectName) {
+    Potion effect = null;
+    if (effectName == null || effectName.equals("")) {
+      return effect;
+    }
+    try {
+      effect = Potion.getPotionFromResourceLocation(effectName.trim());
 
-            if (effect == null) {
-                throw new IllegalArgumentException("Effect not found");
-            }
-        } catch (Exception e) {
-            Ringu.logger.error("Cannot find effect with name " + effectName);
-        }
-        return effect;
+      if (effect == null) {
+        throw new IllegalArgumentException("Effect not found");
+      }
+    } catch (Exception e) {
+      Ringu.logger.error("Cannot find effect with name " + effectName);
+    }
+    return effect;
+  }
+
+  public static Potion[] effectArrayFromEffectStringArray(String[] effectStringArray) {
+    Potion[] effectArray = new Potion[effectStringArray.length];
+
+    for (int i = 0; i < effectStringArray.length; i++) {
+      effectArray[i] = effectFromName(effectStringArray[i]);
     }
 
-    public static Potion[] effectArrayFromEffectStringArray(String[] effectStringArray) {
-        Potion[] effectArray = new Potion[effectStringArray.length];
+    return effectArray;
+  }
 
-        for (int i = 0; i < effectStringArray.length; i++) {
-            effectArray[i] = effectFromName(effectStringArray[i]);
-        }
+  public static String[] effectArrayToEffectStringArray(Potion[] effectList) {
+    String[] effectStringArray = new String[effectList.length];
 
-        return effectArray;
+    for (int i = 0; i < effectList.length; i++) {
+      effectStringArray[i] = effectList[i].getRegistryName().toString();
     }
 
-    public static String[] effectArrayToEffectStringArray(Potion[] effectList) {
-        String[] effectStringArray = new String[effectList.length];
-
-        for (int i = 0; i < effectList.length; i++) {
-            effectStringArray[i] = effectList[i].getRegistryName().toString();
-        }
-
-        return effectStringArray;
-    }
-
+    return effectStringArray;
+  }
 }
