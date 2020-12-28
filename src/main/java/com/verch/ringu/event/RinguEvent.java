@@ -16,7 +16,7 @@ public class RinguEvent {
   private static final int maxTick = 19; // Updates every 20 ticks, i.e. every second
   private static final int startTick = -1;
 
-  static int tick = startTick;
+  private static int tick = startTick;
 
   private static int newTick(int tick) {
     int newTick = tick + 1;
@@ -47,38 +47,24 @@ public class RinguEvent {
     RinguNBTUtil.toggleBoolean(ring, isActive, true);
   }
 
-  public static void onActivation(PlayerEntity player) {
-    Buff.onActivation(player);
-  }
-
-  public static void onDeactivation(PlayerEntity player) {
-    Buff.onDeactivation(player);
-  }
-
   public static void toggleEnabled(PlayerEntity player, ItemStack stack) {
     boolean playerIsActive = isActive(player);
     boolean itemIsActive = isActive(stack);
 
-    if (itemIsActive) {
-      RinguEvent.onActivation(player);
-    } else if (playerIsActive) {
-      RinguEvent.onDeactivation(player);
+    if (playerIsActive == itemIsActive) {
+      return;
     }
 
-    // Only need to toggle if they have different activation states
-    if (playerIsActive != itemIsActive) {
-      toggleNBTEnabled(player);
-      toggleNBTEnabled(stack);
-    }
+    Buff.toggleBuff(player, itemIsActive);
+    toggleNBTEnabled(player);
+    toggleNBTEnabled(stack);
   }
 
   public static void disable(PlayerEntity player) {
-    boolean playerIsActive = isActive(player);
-    if (!playerIsActive) {
-      return;
+    if (isActive(player)) {
+      Buff.deactivateBuff(player);
+      toggleNBTEnabled(player);
     }
-    onDeactivation(player);
-    toggleNBTEnabled(player);
   }
 
   @SubscribeEvent
@@ -88,15 +74,8 @@ public class RinguEvent {
 
   @SubscribeEvent
   public static void onTickPlayerEvent(TickEvent.PlayerTickEvent event) {
-    PlayerEntity player = event.player;
-
-    if (!doUpdate(player, tick)) {
-      return;
-    }
-
-    if (isActive(player)) {
-      Buff.onTickPassive(player);
-      Buff.onTickActive(player);
+    if (doUpdate(event.player, tick) && isActive(event.player)) {
+      Buff.activateBuff(event.player);
     }
   }
 }

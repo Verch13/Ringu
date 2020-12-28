@@ -30,10 +30,8 @@ public class ItemOneRing extends Item {
 
   @Override
   public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
-    ItemStack stack = player.getHeldItem(hand);
-
-    if (player.isSneaking()) {
-      RinguEvent.toggleEnabled(player, stack);
+    if (!world.isRemote && player.isSneaking()) {
+      RinguEvent.toggleEnabled(player, player.getHeldItem(hand));
     }
     return super.onItemRightClick(world, player, hand);
   }
