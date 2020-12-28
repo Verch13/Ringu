@@ -132,40 +132,77 @@ public class Buff {
     }
   }
 
-  public static void onTickActive(EntityPlayer player) {
+  private static void onTickActive(EntityPlayer player) {
     if (enableMagnet) {
       updateMagnet(player);
     }
   }
 
-  public static void onTickPassive(EntityPlayer player) {
+  private static void onTickPassive(EntityPlayer player) {
     passiveBuff(player);
   }
 
-  public static void onActivation(EntityPlayer player) {
-    if (enableFlight) {
-      player.capabilities.allowFlying = true;
-      player.capabilities.setFlySpeed(buffFlySpeed);
-    }
-    if (enableWalkingBuff) {
-      player.capabilities.setPlayerWalkSpeed(buffWalkSpeed);
-    }
-
-    player.sendPlayerAbilities();
+  private static boolean playerEffectHasChanged(
+      EntityPlayer player, boolean allowFlying, float flySpeed, float walkSpeed) {
+    return flightNeedsUpdate(player, allowFlying, flySpeed) || walkNeedsUpdate(player, walkSpeed);
   }
 
-  public static void onDeactivation(EntityPlayer player) {
-    if (enableFlight) {
-      player.capabilities.setFlySpeed(defaultFlySpeed);
-      if (!player.isCreative()) {
-        player.capabilities.isFlying = false;
-        player.capabilities.allowFlying = false;
-      }
-    }
-    if (enableWalkingBuff) {
-      player.capabilities.setPlayerWalkSpeed(defaultWalkSpeed);
-    }
+  private static boolean flightNeedsUpdate(
+      EntityPlayer player, boolean allowFlying, float flySpeed) {
+    return enableFlight
+        && (player.capabilities.allowFlying != allowFlying
+            || player.capabilities.getFlySpeed() != flySpeed);
+  }
 
-    player.sendPlayerAbilities();
+  private static boolean walkNeedsUpdate(EntityPlayer player, float walkSpeed) {
+    return enableWalkingBuff && player.capabilities.getWalkSpeed() != walkSpeed;
+  }
+
+  private static void setFlight(EntityPlayer player, boolean allowFlying, float flySpeed) {
+    player.capabilities.allowFlying = allowFlying;
+    player.capabilities.isFlying = allowFlying;
+    player.capabilities.setFlySpeed(flySpeed);
+  }
+
+  private static void setWalkBuff(EntityPlayer player, float walkSpeed) {
+    player.capabilities.setPlayerWalkSpeed(walkSpeed);
+  }
+
+  private static void setPlayerEffect(
+      EntityPlayer player, boolean enableFlying, float flightSpeed, float walkSpeed) {
+    if (playerEffectHasChanged(player, enableFlying, flightSpeed, walkSpeed)) {
+      setFlight(player, enableFlying, flightSpeed);
+      setWalkBuff(player, walkSpeed);
+      player.sendPlayerAbilities();
+    }
+  }
+
+  private static void enablePlayerEffect(EntityPlayer player) {
+    setPlayerEffect(player, true, buffFlySpeed, buffWalkSpeed);
+  }
+
+  private static void disablePlayerEffect(EntityPlayer player) {
+    setPlayerEffect(player, player.isCreative(), defaultFlySpeed, defaultWalkSpeed);
+  }
+
+  /** Activates the One Ring Buffs. */
+  public static void activateBuff(EntityPlayer player) {
+    enablePlayerEffect(player);
+    onTickPassive(player);
+    onTickActive(player);
+  }
+
+  /** Deactivate the One Ring Buffs. */
+  public static void deactivateBuff(EntityPlayer player) {
+    disablePlayerEffect(player);
+  }
+
+  /** Toggle the One Ring Buffs. */
+  public static void toggleBuff(EntityPlayer player, boolean enable) {
+    if (enable) {
+      activateBuff(player);
+    } else {
+      deactivateBuff(player);
+    }
   }
 }

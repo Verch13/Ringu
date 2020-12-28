@@ -26,6 +26,7 @@ public class RinguEvent {
 
     return newTick;
   }
+
   private static boolean doUpdate(EntityPlayer player, int tick) {
     return !player.world.isRemote && tick == 0;
   }
@@ -46,38 +47,24 @@ public class RinguEvent {
     RinguNBTUtil.toggleBoolean(ring, isActive, true);
   }
 
-  public static void onActivation(EntityPlayer player) {
-    Buff.onActivation(player);
-  }
-
-  public static void onDeactivation(EntityPlayer player) {
-    Buff.onDeactivation(player);
-  }
-
   public static void toggleEnabled(EntityPlayer player, ItemStack stack) {
     boolean playerIsActive = isActive(player);
     boolean itemIsActive = isActive(stack);
 
-    if (itemIsActive) {
-      RinguEvent.onActivation(player);
-    } else if (playerIsActive) {
-      RinguEvent.onDeactivation(player);
+    if (playerIsActive == itemIsActive) {
+      return;
     }
 
-    // Only need to toggle if they have different activation states
-    if (playerIsActive != itemIsActive) {
-      toggleNBTEnabled(player);
-      toggleNBTEnabled(stack);
-    }
+    Buff.toggleBuff(player, itemIsActive);
+    toggleNBTEnabled(player);
+    toggleNBTEnabled(stack);
   }
 
   public static void disable(EntityPlayer player) {
-    boolean playerIsActive = isActive(player);
-    if (!playerIsActive) {
-      return;
+    if (isActive(player)) {
+      Buff.deactivateBuff(player);
+      toggleNBTEnabled(player);
     }
-    onDeactivation(player);
-    toggleNBTEnabled(player);
   }
 
   @SubscribeEvent
@@ -87,15 +74,8 @@ public class RinguEvent {
 
   @SubscribeEvent
   public static void onTickPlayerEvent(TickEvent.PlayerTickEvent event) {
-    EntityPlayer player = event.player;
-
-    if (!doUpdate(player, tick)) {
-      return;
-    }
-
-    if (isActive(player)) {
-      Buff.onTickPassive(player);
-      Buff.onTickActive(player);
+    if (doUpdate(event.player, tick) && isActive(event.player)) {
+      Buff.activateBuff(event.player);
     }
   }
 }

@@ -5,11 +5,11 @@ import net.minecraft.potion.Potion;
 
 public class BuffEffect {
 
-  private static String fieldSeparator = ",";
+  private static final String fieldSeparator = ",";
 
-  private Potion effect;
-  private int level;
-  private int duration;
+  private final Potion effect;
+  private final int level;
+  private final int duration;
 
   public BuffEffect(Potion effect, int level, int duration) {
     this.effect = effect;
