@@ -10,7 +10,6 @@ public class RinguItems {
   public static ItemBaseRing itemBaseRing;
   public static ItemOneRing itemOneRing;
 
-  @SideOnly(Side.CLIENT)
   public static void init() {
     itemBaseRing = new ItemBaseRing();
     itemOneRing = new ItemOneRing();
