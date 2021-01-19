@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -149,6 +150,10 @@ public class Buff {
     return flightNeedsUpdate(player, allowFlying, flySpeed) || walkNeedsUpdate(player, walkSpeed);
   }
 
+  private static boolean walkNeedsUpdate(PlayerEntity player, float walkSpeed) {
+    return enableWalkingBuff && player.abilities.getWalkSpeed() != walkSpeed;
+  }
+
   private static boolean flightNeedsUpdate(
       PlayerEntity player, boolean allowFlying, float flySpeed) {
     return enableFlight
@@ -156,26 +161,40 @@ public class Buff {
             || player.abilities.getFlySpeed() != flySpeed);
   }
 
-  private static boolean walkNeedsUpdate(PlayerEntity player, float walkSpeed) {
-    return enableWalkingBuff && player.abilities.getWalkSpeed() != walkSpeed;
+  private static void setFlight(CompoundNBT abilitiesTag, boolean allowFlying, float flySpeed) {
+    abilitiesTag.putBoolean("mayFly", allowFlying);
+    abilitiesTag.putBoolean("flying", allowFlying);
+    abilitiesTag.putFloat("flySpeed", flySpeed);
   }
 
-  private static void setFlight(PlayerEntity player, boolean allowFlying, float flySpeed) {
-    player.abilities.allowFlying = allowFlying;
-    player.abilities.isFlying = allowFlying;
-    player.abilities.setFlySpeed(flySpeed);
+  private static void setWalkBuff(CompoundNBT abilitiesTag, float walkSpeed) {
+    abilitiesTag.putFloat("walkSpeed", walkSpeed);
   }
 
-  private static void setWalkBuff(PlayerEntity player, float walkSpeed) {
-    player.abilities.setWalkSpeed(walkSpeed);
+  private static CompoundNBT getPlayerCapabilities(PlayerEntity player) {
+    CompoundNBT capabilitiesTag = new CompoundNBT();
+    player.abilities.write(capabilitiesTag);
+    return capabilitiesTag;
+  }
+
+  private static void setPlayerCapabilities(PlayerEntity player, CompoundNBT capabilitiesTag) {
+    player.abilities.read(capabilitiesTag);
+    player.sendPlayerAbilities();
+  }
+
+  private static void setPlayerAbilitiesTag(
+      CompoundNBT abilitiesTag, boolean enableFlying, float flightSpeed, float walkSpeed) {
+    setFlight(abilitiesTag, enableFlying, flightSpeed);
+    setWalkBuff(abilitiesTag, walkSpeed);
   }
 
   private static void setPlayerEffect(
       PlayerEntity player, boolean enableFlying, float flightSpeed, float walkSpeed) {
     if (playerEffectHasChanged(player, enableFlying, flightSpeed, walkSpeed)) {
-      setFlight(player, enableFlying, flightSpeed);
-      setWalkBuff(player, walkSpeed);
-      player.sendPlayerAbilities();
+      CompoundNBT capabilitiesTag = getPlayerCapabilities(player);
+      CompoundNBT abilitiesTag = capabilitiesTag.getCompound("abilities");
+      setPlayerAbilitiesTag(abilitiesTag, enableFlying, flightSpeed, walkSpeed);
+      setPlayerCapabilities(player, capabilitiesTag);
     }
   }
 
