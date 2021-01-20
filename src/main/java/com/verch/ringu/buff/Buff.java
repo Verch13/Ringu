@@ -162,7 +162,7 @@ public class Buff {
   }
 
   private static void setFlight(CompoundNBT abilitiesTag, boolean allowFlying, float flySpeed) {
-    abilitiesTag.putBoolean("mayFly", allowFlying);
+    abilitiesTag.putBoolean("mayfly", allowFlying);
     abilitiesTag.putBoolean("flying", allowFlying);
     abilitiesTag.putFloat("flySpeed", flySpeed);
   }
